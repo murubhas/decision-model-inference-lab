@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "catalogId": "decision-model-guardrail-usd-2026-10-01-g5-spot-use2c",
+  "checkedAt": "2026-10-01T23:23:57Z",
+  "currency": "USD",
+  "providerRates": [
+    {
+      "provider": "llm-bedrock",
+      "modelContains": "claude-sonnet-5-5",
+      "providerKind": "GENERATIVE_LLM",
+      "billingBasis": "INPUT_AND_OUTPUT",
+      "inputUsdPerMillionTokens": 2.0,
+      "outputUsdPerMillionTokens": 10.0,
+      "computeUsdPerHour": null,
+      "sourceUrl": "https://aws.amazon.com/bedrock/pricing/?product=service",
+      "sourcePublishedAt": "2026-09-28T18:09:29Z"
+    },
+    {
+      "provider": "jev",
+      "modelContains": "jev-",
+      "providerKind": "DECISION_MODEL",
+      "billingBasis": "INPUT_ONLY",
+      "inputUsdPerMillionTokens": 0.042,
+      "outputUsdPerMillionTokens": null,
+      "computeUsdPerHour": null,
+      "sourceUrl": "https://typesafe.ai/",
+      "sourcePublishedAt": null
+    },
+    {
+      "provider": "strands-decider",
+      "modelContains": "strands-decider-2B-hobson-v19",
+      "providerKind": "DECISION_MODEL",
+      "billingBasis": "SELF_HOSTED_ACTIVE_COMPUTE",
+      "inputUsdPerMillionTokens": null,
+      "outputUsdPerMillionTokens": null,
+      "computeUsdPerHour": 0.5132,
+      "sourceUrl": "https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeSpotPriceHistory.html",
+      "sourcePublishedAt": "2026-10-01T17:00:00Z"
+    }
+  ],
+  "caveats": [
+    "The Jev estimate applies TypeSafe's published $42 per billion input-token rate. The cited page does not state an output-token price, so this catalog treats Jev output tokens as unbilled and requires invoice reconciliation.",
+    "The Bedrock estimate uses Standard-tier global Claude Sonnet 5.5 rates. Cache, batch, priority, reserved-capacity, and negotiated-price adjustments are excluded.",
+    "The Strands Decider estimate uses the observed us-east-2c Linux/UNIX g5.xlarge Spot price of $0.5132 per hour returned by DescribeSpotPriceHistory. Spot prices vary by Availability Zone and time, and capacity can be interrupted.",
+    "The Strands estimate excludes the 80 GiB gp3 root volume, EKS control-plane, data-transfer, observability, image-build, and support charges.",
+    "SELF_HOSTED_ACTIVE_COMPUTE path cost allocates only measured Decider call latency and therefore represents a full-utilization floor. selfHostedCapacity covers the measured request window, not node provisioning, image pull, model startup, or post-run idle time.",
+    "Provider estimates include successful calls captured by the harness. Failed calls without returned usage, taxes, network transfer, and shared application infrastructure are excluded.",
+    "The pilot corpus labels are draft; cost and latency are measurable, but safety-quality conclusions require independently approved labels."
+  ]
+}

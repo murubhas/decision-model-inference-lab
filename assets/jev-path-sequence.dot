@@ -1,0 +1,48 @@
+digraph JevPathSequence {
+  graph [
+    bgcolor="#F7F9FC",
+    pad="0.28",
+    rankdir=LR,
+    nodesep="0.34",
+    ranksep="0.45",
+    splines=polyline,
+    fontname="Helvetica",
+    fontsize=18,
+    labelloc=t,
+    label="Jev decision-model guardrail path"
+  ];
+  node [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#FFFFFF",
+    color="#A8B3C2",
+    fontcolor="#172033",
+    fontname="Helvetica",
+    fontsize=11,
+    margin="0.16,0.11",
+    penwidth=1.2
+  ];
+  edge [
+    color="#596779",
+    fontcolor="#3E4B5D",
+    fontname="Helvetica",
+    fontsize=9,
+    arrowsize=0.7,
+    penwidth=1.2
+  ];
+
+  request [label="A2A request or\nbenchmark case", fillcolor="#FFF7DB", color="#D8A72D"];
+  quarkus [label="Quarkus guardrail hook\nbuild state + typed questions", fillcolor="#EAF3FF", color="#3B82B6"];
+  rest [label="Declarative REST client\nPOST /v1/systemone", fillcolor="#DFF7EF", color="#2F8D79"];
+  egress [label="Controlled HTTPS egress\nonly external model-provider hop", fillcolor="#FFF1E7", color="#C96B2C"];
+  jev [label="TypeSafe Jev\nevaluate questions in parallel", fillcolor="#F1ECFF", color="#7456B8"];
+  typed [label="Typed probabilities\nno prose generation or JSON repair", fillcolor="#FFFFFF", color="#2F8D79"];
+  result [label="ALLOW | BLOCK | ESCALATE\n+ latency + tokens + cost", fillcolor="#E8F7EE", color="#4B9B68"];
+
+  request -> quarkus [label=" 1  input"];
+  quarkus -> rest [label=" 2  map contract"];
+  rest -> egress [label=" 3  HTTPS"];
+  egress -> jev [label=" 4  state + questions"];
+  jev -> typed [label=" 5  probabilities"];
+  typed -> result [label=" 6  threshold + record"];
+}

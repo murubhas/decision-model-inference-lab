@@ -1,0 +1,58 @@
+version: 0.2
+
+env:
+  shell: bash
+  exported-variables:
+    - AGENT_IMAGE
+    - BENCHMARK_IMAGE
+    - DECIDER_IMAGE
+
+phases:
+  install:
+    on-failure: ABORT
+    runtime-versions:
+      java: corretto25
+    commands:
+      - set -euo pipefail
+      - chmod +x ./mvnw
+      - java -version
+      - docker version
+  pre_build:
+    on-failure: ABORT
+    commands:
+      - test -n "${ACCOUNT_ID:?ACCOUNT_ID is required}"
+      - test -n "${AWS_DEFAULT_REGION:?AWS_DEFAULT_REGION is required}"
+      - test -n "${AGENT_REPOSITORY:?AGENT_REPOSITORY is required}"
+      - test -n "${BENCHMARK_REPOSITORY:?BENCHMARK_REPOSITORY is required}"
+      - test -n "${DECIDER_REPOSITORY:?DECIDER_REPOSITORY is required}"
+      - test -n "${INCLUDE_DECIDER:?INCLUDE_DECIDER is required}"
+      - test -n "${IMAGE_TAG:?IMAGE_TAG is required}"
+      - test -n "${SOURCE_SHA256:?SOURCE_SHA256 is required}"
+      - ECR_REGISTRY="${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+      - AGENT_TAGGED_IMAGE="${ECR_REGISTRY}/${AGENT_REPOSITORY}:${IMAGE_TAG}"
+      - BENCHMARK_TAGGED_IMAGE="${ECR_REGISTRY}/${BENCHMARK_REPOSITORY}:${IMAGE_TAG}"
+      - DECIDER_TAGGED_IMAGE="${ECR_REGISTRY}/${DECIDER_REPOSITORY}:${IMAGE_TAG}"
+      - aws ecr get-login-password --region "${AWS_DEFAULT_REGION}" | docker login --username AWS --password-stdin "${ECR_REGISTRY}"
+  build:
+    on-failure: ABORT
+    commands:
+      - ./mvnw --batch-mode --no-transfer-progress verify
+      - docker build --pull --platform linux/amd64 -f a2a-agent/src/main/docker/Dockerfile.jvm -t "${AGENT_TAGGED_IMAGE}" a2a-agent
+      - docker build --pull --platform linux/amd64 -f benchmark-runner/src/main/docker/Dockerfile.jvm -t "${BENCHMARK_TAGGED_IMAGE}" .
+      - if [ "${INCLUDE_DECIDER}" = "true" ]; then docker build --pull --platform linux/amd64 -f deploy/decider/Dockerfile -t "${DECIDER_TAGGED_IMAGE}" deploy/decider; fi
+  post_build:
+    on-failure: ABORT
+    commands:
+      - docker push "${AGENT_TAGGED_IMAGE}"
+      - docker push "${BENCHMARK_TAGGED_IMAGE}"
+      - if [ "${INCLUDE_DECIDER}" = "true" ]; then docker push "${DECIDER_TAGGED_IMAGE}"; fi
+      - AGENT_DIGEST="$(aws ecr describe-images --region "${AWS_DEFAULT_REGION}" --repository-name "${AGENT_REPOSITORY}" --image-ids imageTag="${IMAGE_TAG}" --query 'imageDetails[0].imageDigest' --output text)"
+      - BENCHMARK_DIGEST="$(aws ecr describe-images --region "${AWS_DEFAULT_REGION}" --repository-name "${BENCHMARK_REPOSITORY}" --image-ids imageTag="${IMAGE_TAG}" --query 'imageDetails[0].imageDigest' --output text)"
+      - AGENT_IMAGE="${ECR_REGISTRY}/${AGENT_REPOSITORY}@${AGENT_DIGEST}"
+      - BENCHMARK_IMAGE="${ECR_REGISTRY}/${BENCHMARK_REPOSITORY}@${BENCHMARK_DIGEST}"
+      - if [ "${INCLUDE_DECIDER}" = "true" ]; then DECIDER_DIGEST="$(aws ecr describe-images --region "${AWS_DEFAULT_REGION}" --repository-name "${DECIDER_REPOSITORY}" --image-ids imageTag="${IMAGE_TAG}" --query 'imageDetails[0].imageDigest' --output text)"; DECIDER_IMAGE="${ECR_REGISTRY}/${DECIDER_REPOSITORY}@${DECIDER_DIGEST}"; else DECIDER_IMAGE=""; fi
+      - printf '{"sourceSha256":"%s","tag":"%s","agent":"%s","benchmark":"%s","decider":"%s"}\n' "${SOURCE_SHA256}" "${IMAGE_TAG}" "${AGENT_IMAGE}" "${BENCHMARK_IMAGE}" "${DECIDER_IMAGE}" | tee image-digests.json
+
+cache:
+  paths:
+    - /root/.m2/**/*

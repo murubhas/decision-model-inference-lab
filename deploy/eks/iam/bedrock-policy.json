@@ -1,0 +1,23 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "InvokeVerifiedClaude55Profiles",
+      "Effect": "Allow",
+      "Action": "bedrock:InvokeModel",
+      "Resource": [
+        "arn:aws:bedrock:${AWS_REGION}:${AWS_ACCOUNT_ID}:inference-profile/global.anthropic.claude-sonnet-5-5",
+        "arn:aws:bedrock:::foundation-model/anthropic.claude-sonnet-5-5",
+        "arn:aws:bedrock:${AWS_REGION}::foundation-model/anthropic.claude-sonnet-5-5",
+        "arn:aws:bedrock:${AWS_REGION}:${AWS_ACCOUNT_ID}:inference-profile/global.anthropic.claude-opus-5-5",
+        "arn:aws:bedrock:::foundation-model/anthropic.claude-opus-5-5",
+        "arn:aws:bedrock:${AWS_REGION}::foundation-model/anthropic.claude-opus-5-5"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceVpce": "${BEDROCK_VPCE_ID}"
+        }
+      }
+    }
+  ]
+}

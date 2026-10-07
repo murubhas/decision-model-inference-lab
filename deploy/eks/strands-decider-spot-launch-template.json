@@ -1,0 +1,53 @@
+{
+  "BlockDeviceMappings": [
+    {
+      "DeviceName": "/dev/xvda",
+      "Ebs": {
+        "DeleteOnTermination": true,
+        "Encrypted": true,
+        "VolumeSize": 80,
+        "VolumeType": "gp3"
+      }
+    }
+  ],
+  "MetadataOptions": {
+    "HttpEndpoint": "enabled",
+    "HttpPutResponseHopLimit": 2,
+    "HttpTokens": "required"
+  },
+  "SecurityGroupIds": [
+    "${SECURITY_GROUP_ID}"
+  ],
+  "TagSpecifications": [
+    {
+      "ResourceType": "instance",
+      "Tags": [
+        {
+          "Key": "Name",
+          "Value": "decision-model-gpu-spot"
+        },
+        {
+          "Key": "purpose",
+          "Value": "decision-model-inference-lab"
+        },
+        {
+          "Key": "auto-delete",
+          "Value": "no"
+        }
+      ]
+    },
+    {
+      "ResourceType": "volume",
+      "Tags": [
+        {
+          "Key": "purpose",
+          "Value": "decision-model-inference-lab"
+        },
+        {
+          "Key": "auto-delete",
+          "Value": "no"
+        }
+      ]
+    }
+  ]
+}

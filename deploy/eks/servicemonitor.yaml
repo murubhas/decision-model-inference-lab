@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: decision-inference-agent
+  namespace: model-serving
+  labels:
+    app.kubernetes.io/name: decision-inference-agent
+    app.kubernetes.io/part-of: decision-model-inference-lab
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames:
+      - model-serving
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: decision-inference-agent
+      app.kubernetes.io/component: agent
+  endpoints:
+    - port: http
+      path: /q/metrics
+      interval: 15s
+      scrapeTimeout: 10s

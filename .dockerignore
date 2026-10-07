@@ -1,0 +1,12 @@
+**
+!benchmark-runner/
+!benchmark-runner/src/
+!benchmark-runner/src/main/
+!benchmark-runner/src/main/docker/
+!benchmark-runner/src/main/docker/Dockerfile.jvm
+!benchmark-runner/target/
+!benchmark-runner/target/quarkus-app/
+!benchmark-runner/target/quarkus-app/**
+!datasets/
+!datasets/guardrail-corpus.v1.jsonl
+!datasets/provider-pricing.v1.json

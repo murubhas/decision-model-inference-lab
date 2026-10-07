@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0",
+  "catalogId": "decision-model-guardrail-usd-2026-10-01",
+  "checkedAt": "2026-10-01T18:20:00Z",
+  "currency": "USD",
+  "providerRates": [
+    {
+      "provider": "llm-bedrock",
+      "modelContains": "claude-sonnet-5-5",
+      "providerKind": "GENERATIVE_LLM",
+      "billingBasis": "INPUT_AND_OUTPUT",
+      "inputUsdPerMillionTokens": 2.0,
+      "outputUsdPerMillionTokens": 10.0,
+      "computeUsdPerHour": null,
+      "sourceUrl": "https://aws.amazon.com/bedrock/pricing/?product=service",
+      "sourcePublishedAt": "2026-09-28T18:09:29Z"
+    },
+    {
+      "provider": "jev",
+      "modelContains": "jev-",
+      "providerKind": "DECISION_MODEL",
+      "billingBasis": "INPUT_ONLY",
+      "inputUsdPerMillionTokens": 0.042,
+      "outputUsdPerMillionTokens": null,
+      "computeUsdPerHour": null,
+      "sourceUrl": "https://typesafe.ai/",
+      "sourcePublishedAt": null
+    },
+    {
+      "provider": "strands-decider",
+      "modelContains": "strands-decider-2B-hobson-v19",
+      "providerKind": "DECISION_MODEL",
+      "billingBasis": "SELF_HOSTED_ACTIVE_COMPUTE",
+      "inputUsdPerMillionTokens": null,
+      "outputUsdPerMillionTokens": null,
+      "computeUsdPerHour": 1.006,
+      "sourceUrl": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/us-east-2/index.csv",
+      "sourcePublishedAt": "2026-09-25T17:45:21Z"
+    }
+  ],
+  "caveats": [
+    "The Jev estimate applies TypeSafe's published $42 per billion input-token rate. The cited page does not state an output-token price, so this catalog treats Jev output tokens as unbilled and requires invoice reconciliation.",
+    "The Bedrock estimate uses Standard-tier global Claude Sonnet 5.5 rates. Cache, batch, priority, reserved-capacity, and negotiated-price adjustments are excluded.",
+    "The Strands Decider estimate uses the us-east-2 Linux On-Demand g5.xlarge list price of $1.006 per hour. It excludes EBS, EKS control-plane, data-transfer, observability, and support charges.",
+    "SELF_HOSTED_ACTIVE_COMPUTE path cost allocates only measured Decider call latency and therefore represents a full-utilization floor. selfHostedCapacity separately reports the cost of keeping the node provisioned across the measured benchmark window and exposes observed utilization.",
+    "Provider estimates include successful calls captured by the harness. Failed calls without returned usage, taxes, network transfer, and shared application infrastructure are excluded.",
+    "The pilot corpus labels are draft; cost and latency are measurable, but safety-quality conclusions require independently approved labels."
+  ]
+}

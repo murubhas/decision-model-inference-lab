@@ -1,0 +1,50 @@
+{
+  "clusterName": "${EKS_CLUSTER_NAME}",
+  "nodegroupName": "decision-model-gpu-spot",
+  "scalingConfig": {
+    "minSize": 1,
+    "maxSize": 1,
+    "desiredSize": 1
+  },
+  "subnets": [
+    "${SUBNET_ID_1}",
+    "${SUBNET_ID_2}",
+    "${SUBNET_ID_3}"
+  ],
+  "instanceTypes": [
+    "g5.xlarge"
+  ],
+  "amiType": "AL2023_x86_64_NVIDIA",
+  "capacityType": "SPOT",
+  "nodeRole": "${EKS_NODE_ROLE_ARN}",
+  "labels": {
+    "role": "decision-model",
+    "workload": "decision-model",
+    "capacity": "spot",
+    "gpu-stack": "hyperpod",
+    "nvidia.com/gpu.deploy.dcgm": "true",
+    "nvidia.com/gpu.deploy.dcgm-exporter": "true",
+    "nvidia.com/gpu.deploy.device-plugin": "false",
+    "nvidia.com/gpu.deploy.gpu-feature-discovery": "false",
+    "nvidia.com/gpu.deploy.mig-manager": "false",
+    "nvidia.com/gpu.deploy.operator-validator": "false"
+  },
+  "taints": [
+    {
+      "key": "workload",
+      "value": "decision-model",
+      "effect": "NO_SCHEDULE"
+    }
+  ],
+  "launchTemplate": {
+    "name": "decision-model-gpu-spot-lt",
+    "version": "1"
+  },
+  "tags": {
+    "auto-delete": "no",
+    "purpose": "decision-model-inference-lab"
+  },
+  "updateConfig": {
+    "maxUnavailable": 1
+  }
+}

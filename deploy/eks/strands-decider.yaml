@@ -1,0 +1,156 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: strands-decider
+  namespace: model-serving
+  labels:
+    app.kubernetes.io/name: strands-decider
+    app.kubernetes.io/component: decision-model
+    app.kubernetes.io/part-of: decision-model-inference-lab
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: strands-decider
+      app.kubernetes.io/component: decision-model
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: strands-decider
+        app.kubernetes.io/component: decision-model
+        app.kubernetes.io/part-of: decision-model-inference-lab
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        role: decision-model
+      tolerations:
+        - key: workload
+          operator: Equal
+          value: decision-model
+          effect: NoSchedule
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: decider
+          image: ${DECIDER_IMAGE}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: HOME
+              value: /tmp
+            - name: XDG_CACHE_HOME
+              value: /tmp/.cache
+            - name: CUDA_CACHE_PATH
+              value: /tmp/cuda-cache
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 90
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "2"
+              memory: 10Gi
+              nvidia.com/gpu: "1"
+            limits:
+              cpu: "4"
+              memory: 14Gi
+              nvidia.com/gpu: "1"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: strands-decider
+  namespace: model-serving
+  labels:
+    app.kubernetes.io/name: strands-decider
+    app.kubernetes.io/component: decision-model
+    app.kubernetes.io/part-of: decision-model-inference-lab
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: strands-decider
+    app.kubernetes.io/component: decision-model
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+      protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: strands-decider
+  namespace: model-serving
+  labels:
+    app.kubernetes.io/name: strands-decider
+    app.kubernetes.io/part-of: decision-model-inference-lab
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: strands-decider
+      app.kubernetes.io/component: decision-model
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/part-of: decision-model-inference-lab
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53

@@ -1,0 +1,52 @@
+digraph HybridPathSequence {
+  graph [
+    bgcolor="#F7F9FC",
+    pad="0.28",
+    rankdir=LR,
+    nodesep="0.30",
+    ranksep="0.45",
+    splines=polyline,
+    fontname="Helvetica",
+    fontsize=18,
+    labelloc=t,
+    label="Check-specific Hybrid guardrail path"
+  ];
+  node [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#FFFFFF",
+    color="#A8B3C2",
+    fontcolor="#172033",
+    fontname="Helvetica",
+    fontsize=10,
+    margin="0.14,0.10",
+    penwidth=1.2
+  ];
+  edge [
+    color="#596779",
+    fontcolor="#3E4B5D",
+    fontname="Helvetica",
+    fontsize=8,
+    arrowsize=0.7,
+    penwidth=1.2
+  ];
+
+  request [label="A2A request or\nbenchmark case", fillcolor="#FFF7DB", color="#D8A72D"];
+  route [label="Quarkus routing policy\nJev-first vs LLM-direct", fillcolor="#EAF3FF", color="#3B82B6"];
+  jev [label="TypeSafe Jev\nprojected state + Jev-first checks", fillcolor="#DFF7EF", color="#2F8D79"];
+  gate [shape=diamond, label="Jev answer\nclear?", fillcolor="#FFFFFF", color="#3C91B3", margin="0.08,0.05"];
+  batch [label="One LLM batch\nLLM-direct + uncertain checks", fillcolor="#FFF1E7", color="#C96B2C"];
+  vpce [label="Bedrock PrivateLink\nClaude Sonnet 5.5", fillcolor="#F1ECFF", color="#7456B8"];
+  merge [label="Merge typed answers\nin original question order", fillcolor="#FFFFFF", color="#3C91B3"];
+  result [label="ALLOW | BLOCK | ESCALATE\n+ route, fallback, latency, tokens, cost", fillcolor="#E8F7EE", color="#4B9B68"];
+
+  request -> route [label=" 1  input"];
+  route -> jev [label=" 2  Jev-first\n controlled egress", color="#2F8D79"];
+  jev -> gate [label=" 3  probabilities", color="#2F8D79"];
+  route -> batch [label=" 4  LLM-direct", color="#C57A32"];
+  gate -> batch [label=" 5  uncertain\n or unavailable", color="#C57A32"];
+  gate -> merge [label=" clear", color="#2F8D79"];
+  batch -> vpce [label=" 6  private InvokeModel", color="#7456B8"];
+  vpce -> merge [label=" 7  typed JSON", color="#7456B8"];
+  merge -> result [label=" 8  decide + record", color="#3C91B3"];
+}

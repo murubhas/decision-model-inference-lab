@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: decision-inference-benchmark-repro3-results
+  namespace: model-serving
+  labels:
+    app.kubernetes.io/name: decision-inference-benchmark
+    app.kubernetes.io/component: benchmark-results
+    app.kubernetes.io/part-of: decision-model-inference-lab
+    benchmark-run: repro3
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: coder-gp3

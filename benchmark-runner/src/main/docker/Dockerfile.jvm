@@ -1,0 +1,17 @@
+FROM registry.access.redhat.com/ubi9/openjdk-25-runtime:1.24
+
+ENV LANGUAGE='en_US:en'
+
+COPY --chown=185 benchmark-runner/target/quarkus-app/lib/ /deployments/lib/
+COPY --chown=185 benchmark-runner/target/quarkus-app/*.jar /deployments/
+COPY --chown=185 benchmark-runner/target/quarkus-app/app/ /deployments/app/
+COPY --chown=185 benchmark-runner/target/quarkus-app/quarkus/ /deployments/quarkus/
+COPY --chown=185 datasets/guardrail-corpus.v1.jsonl /work/datasets/guardrail-corpus.v1.jsonl
+COPY --chown=185 datasets/provider-pricing.v1.json /work/datasets/provider-pricing.v1.json
+
+WORKDIR /work
+USER 185
+ENV JAVA_OPTS_APPEND="-Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
+
+ENTRYPOINT [ "/opt/jboss/container/java/run/run-java.sh" ]

@@ -1,0 +1,244 @@
+digraph JevGuardrailExperiment {
+  graph [
+    bgcolor="#F7F9FC",
+    pad="0.30",
+    nodesep="0.35",
+    ranksep="0.48",
+    splines=polyline,
+    newrank=true,
+    compound=true,
+    ratio=compress,
+    fontname="Helvetica",
+    fontsize=20,
+    labelloc=t,
+    labeljust=c,
+    label="Quarkus A2A guardrails: LLM vs Jev vs check-specific Hybrid\nShared Bedrock agent, MCP tools, typed policy, projected state, benchmark corpus, and explicit paid-run gate"
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    color="#CBD5E1",
+    fillcolor="#FFFFFF",
+    fontcolor="#172033",
+    fontname="Helvetica",
+    fontsize=11,
+    margin="0.16,0.10",
+    penwidth=1.2
+  ];
+
+  edge [
+    color="#64748B",
+    fontcolor="#475569",
+    fontname="Helvetica",
+    fontsize=9,
+    arrowsize=0.7,
+    penwidth=1.2
+  ];
+
+  peer [label="1  Peer A2A agent\nMessage / Task", fillcolor="#FFF7DB", color="#D8A72D"];
+  edge_api [label="2  Quarkus A2A edge\nA2A 1.0 JSON-RPC | Agent Card", fillcolor="#EAF3FF", color="#3B82B6"];
+  hard_input [label="3  Deterministic input policy\nplanned authz | limits | exact validation", fillcolor="#FFF1E7", color="#C96B2C"];
+  router [label="4  Semantic evaluator\nllm | jev | hybrid", fillcolor="#F1ECFF", color="#7456B8"];
+  boundary [label="CONTROLLED BOUNDARY\nsame cases | model | MCP tools | hard policy", fillcolor="#FFFBEA", color="#C9A227"];
+
+  { rank=same; peer; edge_api; hard_input; router; boundary; }
+  peer -> edge_api -> hard_input -> router;
+  router -> boundary [style=dashed, arrowhead=none, color="#C9A227"];
+
+  subgraph cluster_llm {
+    label="A. LLM PATH";
+    labelloc=t;
+    labeljust=l;
+    color="#D98B8B";
+    fillcolor="#FFF7F7";
+    style="rounded,filled";
+    penwidth=1.6;
+    fontname="Helvetica-Bold";
+    fontcolor="#8F3030";
+    fontsize=14;
+
+    llm_state [label="State + policy\njudge prompt", fillcolor="#FFFFFF", color="#D98B8B"];
+    llm_judge [label="Stateless generative LLM judge\nreason + emit JSON", fillcolor="#FFECEC", color="#C65C5C"];
+    llm_parse [label="Validate / parse / retry\nstructured verdict", fillcolor="#FFFFFF", color="#D98B8B"];
+    llm_decision [label="ALLOW | BLOCK | ESCALATE", fillcolor="#FDE7E7", color="#B64646"];
+
+    llm_state -> llm_judge -> llm_parse -> llm_decision [color="#B85A5A"];
+  }
+
+  subgraph cluster_jev {
+    label="B. JEV PATH";
+    labelloc=t;
+    labeljust=l;
+    color="#4CA38F";
+    fillcolor="#F2FCF8";
+    style="rounded,filled";
+    penwidth=1.6;
+    fontname="Helvetica-Bold";
+    fontcolor="#176C5B";
+    fontsize=14;
+
+    jev_state [label="State + typed questions\nNoul | Choice | Score", fillcolor="#FFFFFF", color="#4CA38F"];
+    jev_eval [label="TypeSafe System One\nPOST /v1/systemone", fillcolor="#DFF7EF", color="#2F8D79"];
+    jev_prob [label="Typed probabilities\nno generated prose to parse", fillcolor="#FFFFFF", color="#4CA38F"];
+    jev_decision [label="ALLOW | BLOCK | ESCALATE", fillcolor="#DDF5EC", color="#2B806E"];
+
+    jev_state -> jev_eval -> jev_prob -> jev_decision [color="#2F8D79"];
+  }
+
+  subgraph cluster_hybrid {
+    label="C. CHECK-SPECIFIC HYBRID PATH";
+    labelloc=t;
+    labeljust=l;
+    color="#4B9CBF";
+    fillcolor="#F2FAFD";
+    style="rounded,filled";
+    penwidth=1.6;
+    fontname="Helvetica-Bold";
+    fontcolor="#1F6988";
+    fontsize=14;
+
+    hybrid_state [label="Strict question routes\n+ required state keys", fillcolor="#FFFFFF", color="#4B9CBF"];
+    hybrid_split [shape=diamond, label="route each\ncheck", fillcolor="#FFFFFF", color="#4B9CBF", margin="0.08,0.05"];
+    hybrid_jev [label="Jev-first batch\nprojected state", fillcolor="#DFF5FB", color="#3C91B3"];
+    hybrid_gate [shape=diamond, label="Jev answer\nclear?", fillcolor="#FFFFFF", color="#4B9CBF", margin="0.08,0.05"];
+    hybrid_llm [label="One LLM batch\nLLM-direct + uncertain", fillcolor="#FFF4E8", color="#C57A32"];
+    hybrid_merge [label="Merge typed answers\noriginal question order", fillcolor="#FFFFFF", color="#4B9CBF"];
+    hybrid_decision [label="ALLOW | BLOCK | ESCALATE", fillcolor="#DCEFF7", color="#337F9E"];
+
+    hybrid_state -> hybrid_split [color="#3C91B3"];
+    hybrid_split -> hybrid_jev [label=" Jev-first", color="#2F8D79"];
+    hybrid_split -> hybrid_llm [label=" LLM-direct", color="#C57A32"];
+    hybrid_jev -> hybrid_gate [color="#3C91B3"];
+    hybrid_gate -> hybrid_merge [label=" clear", color="#2F8D79"];
+    hybrid_gate -> hybrid_llm [label=" uncertain", color="#C57A32"];
+    hybrid_llm -> hybrid_merge [color="#C57A32"];
+    hybrid_merge -> hybrid_decision [color="#3C91B3"];
+  }
+
+  { rank=same; llm_state; jev_state; hybrid_state; }
+  { rank=same; llm_decision; jev_decision; hybrid_decision; }
+
+  router -> llm_state [color="#B85A5A"];
+  router -> jev_state [color="#2F8D79"];
+  router -> hybrid_state [color="#3C91B3"];
+
+  policy [
+    label="5  Shared Quarkus policy catalog\nversioned questions + strict routes + state keys + calibrated thresholds + hard rules",
+    fillcolor="#F1ECFF",
+    color="#7456B8",
+    penwidth=1.5
+  ];
+
+  llm_decision -> policy [color="#B85A5A"];
+  jev_decision -> policy [color="#2F8D79"];
+  hybrid_decision -> policy [color="#3C91B3"];
+
+  subgraph cluster_execution {
+    label="SHARED QUARKUS A2A EXECUTION PATH";
+    labelloc=t;
+    labeljust=l;
+    color="#9AA8BA";
+    fillcolor="#F8FAFC";
+    style="rounded,filled";
+    penwidth=1.4;
+    fontname="Helvetica-Bold";
+    fontcolor="#334155";
+    fontsize=13;
+
+    input_hook [label="Input guardrail hook\npre-LLM", fillcolor="#FFFFFF"];
+    ai_service [label="LangChain4j AI service\n@RegisterAiService", fillcolor="#EAF3FF", color="#3B82B6"];
+    model [label="Primary Bedrock model\nClaude Sonnet 5.5", fillcolor="#E8F0FF", color="#4D76B8"];
+    tool_policy [label="Guarded dynamic MCP ToolProvider\nintent + argument check before network", fillcolor="#FFF1E7", color="#C96B2C"];
+    mcp [label="Accelerated-compute MCP server\nsearch | ask", fillcolor="#FFF8E8", color="#D09A2D"];
+    output_hook [label="Final-output guardrail hook\nrelevance | grounding | leakage", fillcolor="#FFFFFF"];
+    a2a_out [label="A2A result\nMessage | Task | Artifact", fillcolor="#E8F7EE", color="#4B9B68"];
+
+    input_hook -> ai_service -> model;
+    model -> tool_policy [label=" proposed tool call"];
+    tool_policy -> mcp;
+    mcp -> ai_service [label=" grounded result"];
+    model -> output_hook [label=" final answer"];
+    output_hook -> a2a_out [label=" final answer"];
+    mcp -> a2a_out [style=invis, weight=100];
+
+    { rank=same; input_hook; ai_service; model; output_hook; tool_policy; mcp; a2a_out; }
+  }
+
+  policy -> input_hook;
+  policy -> tool_policy [style=dashed, label=" reused", constraint=false];
+  policy -> output_hook [style=dashed, label=" reused", constraint=false];
+
+  observe [
+    label="MEASURE EVERY PATH\nstructured audit logs | Prometheus /q/metrics | OpenTelemetry spans | model/version | probabilities | routed question IDs | latency | tokens | fallback | errors",
+    fillcolor="#EEF2F7",
+    color="#7B8797",
+    fontcolor="#27364A",
+    penwidth=1.4,
+    margin="0.22,0.14",
+    width=10.5
+  ];
+
+  mcp -> observe [style=invis, weight=50];
+  a2a_out -> observe [style=dashed, arrowhead=none, color="#7B8797", constraint=false];
+
+  subgraph cluster_benchmark {
+    label="REPRODUCIBLE BENCHMARK PLANE";
+    labelloc=t;
+    labeljust=l;
+    color="#9AA8BA";
+    fillcolor="#F8FAFC";
+    style="rounded,filled";
+    penwidth=1.4;
+    fontname="Helvetica-Bold";
+    fontcolor="#334155";
+    fontsize=13;
+
+    corpus [label="Versioned JSONL corpus\n34 draft cases | 12 source-derived | SHA-256", fillcolor="#FFF7DB", color="#D8A72D"];
+    benchmark [label="Quarkus benchmark CLI\nvalidate | run | score", fillcolor="#EAF3FF", color="#3B82B6"];
+    pricing [label="Versioned provider pricing\nsource URLs | rates | caveats | SHA-256", fillcolor="#FFF1E7", color="#C96B2C"];
+    report [label="Self-contained evidence report + JSONL\ninput | provider output | quality | latency | tokens | fallback | cost", fillcolor="#E8F7EE", color="#4B9B68"];
+
+    corpus -> benchmark -> report;
+    pricing -> benchmark;
+    { rank=same; corpus; pricing; benchmark; report; }
+  }
+
+  observe -> benchmark [style=dashed, label=" measured paths", color="#7B8797"];
+
+  subgraph cluster_eks {
+    label="PRIVATE EKS RUNTIME + EXPLICITLY GATED BENCHMARK";
+    labelloc=t;
+    labeljust=l;
+    color="#7C8A9D";
+    fillcolor="#F3F6F9";
+    style="rounded,filled";
+    penwidth=1.4;
+    fontname="Helvetica-Bold";
+    fontcolor="#334155";
+    fontsize=13;
+
+    eks_agent [label="JDK 25 agent Pod + ClusterIP\nHYBRID / SHADOW | read-only root | no Ingress", fillcolor="#EAF3FF", color="#3B82B6"];
+    identity [label="Dedicated EKS Pod Identity\nexact bedrock:InvokeModel policy", fillcolor="#FFF1E7", color="#C96B2C"];
+    vpce [label="Bedrock Runtime interface endpoint\nAWS PrivateLink | explicit endpoint override", fillcolor="#E8F7EE", color="#4B9B68"];
+    bedrock [label="Bedrock us-east-2\nSonnet 5.5 | optional Opus 5.5", fillcolor="#E8F0FF", color="#4D76B8"];
+    internet_egress [label="Controlled HTTPS egress\nexternal provider traffic", fillcolor="#FFF1E7", color="#C96B2C"];
+    typesafe [label="TypeSafe public API\napi.typesafe.ai/v1/systemone", fillcolor="#DFF7EF", color="#2F8D79"];
+    pilot [label="Suspended benchmark Job\nmanual paid-call activation", fillcolor="#FFF7DB", color="#D8A72D"];
+    result_pvc [label="Temporary gp3 result PVC\nsurvives Pod exit | archive then delete", fillcolor="#E8F7EE", color="#4B9B68"];
+
+    eks_agent -> identity [label=" credentials"];
+    eks_agent -> vpce [label=" private HTTPS", color="#4B9B68"];
+    vpce -> bedrock [label=" InvokeModel", color="#4B9B68"];
+    eks_agent -> internet_egress [label=" Jev only", color="#C96B2C"];
+    internet_egress -> typesafe [color="#C96B2C"];
+    pilot -> identity [color="#D8A72D"];
+    pilot -> vpce [color="#4B9B68"];
+    pilot -> internet_egress [color="#C96B2C"];
+    pilot -> result_pvc [color="#4B9B68"];
+    { rank=same; eks_agent; identity; vpce; bedrock; internet_egress; typesafe; pilot; result_pvc; }
+  }
+
+  observe -> eks_agent [style=dashed, label=" OTLP + Prometheus", color="#7B8797"];
+  benchmark -> pilot [style=dashed, label=" packaged corpus", color="#D8A72D"];
+}
