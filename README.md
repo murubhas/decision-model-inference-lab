@@ -92,10 +92,8 @@ comparison with the checked-in evidence.
 
 ## Quick Start: No Provider Calls
 
-Replace `OWNER` after the public repository is created:
-
 ```shell
-git clone https://github.com/OWNER/decision-model-inference-lab.git
+git clone https://github.com/murubhas/decision-model-inference-lab.git
 cd decision-model-inference-lab
 
 java --version
@@ -686,6 +684,13 @@ the team walkthrough. The self-contained
 [`15-minute HTML5 deck`](docs/decision-model-inference-lab-15min.html) turns the
 architecture, one readable decision record, measured trade-offs, and promotion
 rubric into a presenter-ready narrative with speaker notes.
+The ten-slide main talk remains 15 minutes. Seven untimed appendix slides cover
+the detailed flows, Shadow mode, routing, provider choice, Strands measurements,
+and the broader inference optimization message. The
+[`Inference Choices appendix`](docs/decision-model-inference-lab-15min.html#appendix-optimization)
+connects decision-model routing to caching, offline batching, and deterministic
+code. Caching and offline batch serving are opportunities to evaluate, not
+implemented features or measured savings in this lab.
 
 ## Detailed Architecture
 

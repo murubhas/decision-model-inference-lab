@@ -42,13 +42,30 @@ check "concrete EC2 instance identifier" '(?<![A-Za-z0-9-])i-[0-9a-f]{8,}(?![A-Z
 check "private-key material" '-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----'
 check "employee-hosted domain" '[A-Za-z0-9.-]+[.]people[.]aws[.]dev'
 
+public_repository_url=""
+repository_remote="$(git remote get-url github 2>/dev/null || git remote get-url origin 2>/dev/null || true)"
+if [[ "$repository_remote" =~ ^git@github\.com(-[[:alnum:]_-]+)?:([[:alnum:]_.-]+/[[:alnum:]_.-]+)$ ]]; then
+  repository_path="${BASH_REMATCH[2]}"
+  public_repository_url="https://github.com/${repository_path%.git}"
+elif [[ "$repository_remote" =~ ^https://github\.com/[[:alnum:]_.-]+/[[:alnum:]_.-]+$ ]]; then
+  public_repository_url="${repository_remote%.git}"
+fi
+
 if [[ -f .publication-denylist ]]; then
   while IFS= read -r denied; do
     [[ -z "$denied" || "$denied" == \#* ]] && continue
-    if rg -n -F "${scan_args[@]}" --glob '!/.publication-denylist' -- "$denied" .; then
-      printf 'publication audit failed: local denylist match\n' >&2
-      failed=1
-    fi
+    while IFS= read -r matched_line; do
+      # The chosen repository URL is public project identity, not a personal-data leak.
+      filtered_line="$matched_line"
+      if [[ -n "$public_repository_url" ]]; then
+        filtered_line="${matched_line//"$public_repository_url"/<public-repository>}"
+      fi
+      if [[ "$filtered_line" == *"$denied"* ]]; then
+        printf '%s\n' "$matched_line"
+        printf 'publication audit failed: local denylist match\n' >&2
+        failed=1
+      fi
+    done < <(rg -n -F "${scan_args[@]}" --glob '!/.publication-denylist' -- "$denied" . || true)
   done < .publication-denylist
 fi
 

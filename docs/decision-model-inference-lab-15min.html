@@ -1635,6 +1635,26 @@
     .canary-verdict strong { color: var(--text); font-size: 18px; }
     .canary-caveat { margin: 8px 0 0; color: var(--muted); font-size: 12.5px; font-weight: 700; }
 
+    /* ---------- appendix: broader inference optimization ---------- */
+    .optimization-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .optimization-item {
+      min-height: 150px;
+      padding: 22px 24px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-left: 6px solid var(--accent);
+    }
+
+    .optimization-item h3 { margin-bottom: 10px; color: var(--accent); font-size: 24px; }
+    .optimization-item p { margin: 0; color: var(--body); font-size: 18px; line-height: 1.5; }
+    .optimization-question { margin: 20px 0 8px; color: var(--text); font-size: 21px; font-weight: 700; }
+    .optimization-scope { margin: 0; color: var(--muted); font-size: 14px; }
+
     /* ---------- speaker notes ---------- */
     .speaker-note {
       display: none;
@@ -1771,6 +1791,8 @@
     body.present-mode .merge-bar { padding: 11px 15px; }
     body.present-mode .results-layout { gap: 24px; }
     body.present-mode .metric-block { margin-bottom: 12px; }
+    body.present-mode #results .metric-title { margin-bottom: 6px; }
+    body.present-mode #results .bar-row { margin-bottom: 4px; }
     body.present-mode .bar-track { height: 17px; }
     body.present-mode .quality-card { padding: 10px 12px; font-size: 12px; }
     body.present-mode .integrity-panel { padding: 14px 16px; }
@@ -1822,6 +1844,12 @@
     body.present-mode .canary-verdict { margin-top: 11px; padding: 9px 13px; font-size: 12.5px; }
     body.present-mode .canary-verdict strong { font-size: 16px; }
     body.present-mode .canary-caveat { margin-top: 5px; font-size: 11.5px; }
+    body.present-mode .optimization-grid { gap: 14px; }
+    body.present-mode .optimization-item { min-height: 130px; padding: 18px 20px; }
+    body.present-mode .optimization-item h3 { font-size: 22px; }
+    body.present-mode .optimization-item p { font-size: 17px; }
+    body.present-mode .optimization-question { margin-top: 16px; font-size: 19px; }
+    body.present-mode .optimization-scope { font-size: 13px; }
     body.present-mode .speaker-note { margin-top: 14px; padding: 10px 14px; font-size: 12.5px; }
 
     /* ---------- responsive ---------- */
@@ -1856,6 +1884,8 @@
       .route-grid, .route-facts, .route-facts.three, .seq-distinction, .seq-distinction.three { grid-template-columns: 1fr; }
       .provider-spectrum, .canary-layout, .canary-verdict { grid-template-columns: 1fr; }
       .provider-lessons { grid-template-columns: 1fr; }
+      .optimization-grid { grid-template-columns: 1fr; }
+      .optimization-item { min-height: 0; }
       .canary-metrics { grid-template-columns: 1fr 1fr; }
       .arch-hooks { grid-template-columns: 1fr; }
       .route-groups { grid-template-columns: 1fr; }
@@ -1982,6 +2012,7 @@
     <button class="chapter-link" type="button" data-target="appendix-shadow"><span class="number">A4</span><span class="label">Shadow Mode</span></button>
     <button class="chapter-link" type="button" data-target="appendix-provider-choice"><span class="number">A5</span><span class="label">Provider Choice</span></button>
     <button class="chapter-link" type="button" data-target="appendix-strands-canary"><span class="number">A6</span><span class="label">Strands EKS</span></button>
+    <button class="chapter-link" type="button" data-target="appendix-optimization"><span class="number">A7</span><span class="label">Inference Choices</span></button>
   </nav>
 
   <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
@@ -2413,7 +2444,7 @@
           <svg class="seq-svg" viewBox="0 0 1400 122" role="img" aria-labelledby="seq-jev-t seq-jev-d"><title id="seq-jev-t">Jev decision-model path sequence</title><desc id="seq-jev-d">Request, GuardrailRequest built by an A2A hook or directly from a benchmark case, declarative REST client, controlled HTTPS egress, TypeSafe Jev evaluates questions in parallel, typed probabilities, then ALLOW, BLOCK, or ESCALATE under the same thresholds.</desc><g class="sq-node"><rect class="sq-box n-orange" x="0.0" y="2" width="177.7" height="118" rx="3"/><rect class="f-orange" x="0.0" y="2" width="177.7" height="4"/><text class="sq-tag f-orange" x="11.0" y="26">SOURCE</text><text class="sq-title" x="11.0" y="49">A2A request or</text><text class="sq-title" x="11.0" y="69">benchmark case</text><text class="sq-sub" x="11.0" y="92">same input on</text><text class="sq-sub" x="11.0" y="109">every path</text></g><polyline class="sq-line s-jev" points="180.7,61.0 189.7,61.0"/><polygon class="f-jev" points="200.7,61.0 189.7,65.5 189.7,56.5"/><g class="sq-node"><rect class="sq-box n-teal" x="203.7" y="2" width="177.7" height="118" rx="3"/><rect class="f-teal" x="203.7" y="2" width="177.7" height="4"/><text class="sq-tag f-teal" x="214.7" y="26">1 · INPUT</text><text class="sq-title" x="214.7" y="49">Build</text><text class="sq-title" x="214.7" y="69">GuardrailRequest</text><text class="sq-sub" x="214.7" y="92">A2A hook or</text><text class="sq-sub" x="214.7" y="109">benchmark case</text></g><polyline class="sq-line s-jev" points="384.4,61.0 393.4,61.0"/><polygon class="f-jev" points="404.4,61.0 393.4,65.5 393.4,56.5"/><g class="sq-node"><rect class="sq-box n-jev" x="407.4" y="2" width="177.7" height="118" rx="3"/><rect class="f-jev" x="407.4" y="2" width="177.7" height="4"/><text class="sq-tag f-jev" x="418.4" y="26">2 · MAP CONTRACT</text><text class="sq-title" x="418.4" y="49">Declarative</text><text class="sq-title" x="418.4" y="69">REST client</text><text class="sq-sub" x="418.4" y="92">POST /v1/systemone</text><text class="sq-sub" x="418.4" y="109">retries + timeout</text></g><polyline class="sq-line s-jev" points="588.1,61.0 597.1,61.0"/><polygon class="f-jev" points="608.1,61.0 597.1,65.5 597.1,56.5"/><g class="sq-node"><rect class="sq-box sq-net n-jev" x="611.1" y="2" width="177.7" height="118" rx="3"/><rect class="f-jev" x="611.1" y="2" width="177.7" height="4"/><text class="sq-tag f-jev" x="622.1" y="26">3 · HTTPS</text><text class="sq-title" x="622.1" y="49">Controlled</text><text class="sq-title" x="622.1" y="69">HTTPS egress</text><text class="sq-sub" x="622.1" y="92">only public provider</text><text class="sq-sub" x="622.1" y="109">hop in this design</text></g><polyline class="sq-line s-jev" points="791.9,61.0 800.9,61.0"/><polygon class="f-jev" points="811.9,61.0 800.9,65.5 800.9,56.5"/><g class="sq-node"><rect class="sq-box n-jev" x="814.9" y="2" width="177.7" height="118" rx="3"/><rect class="f-jev" x="814.9" y="2" width="177.7" height="4"/><text class="sq-tag f-jev" x="825.9" y="26">4 · TYPED REQUEST</text><text class="sq-title" x="825.9" y="49">TypeSafe Jev</text><text class="sq-sub" x="825.9" y="72">jev-1.13.0 evaluates</text><text class="sq-sub" x="825.9" y="89">questions in parallel</text></g><polyline class="sq-line s-jev" points="995.6,61.0 1004.6,61.0"/><polygon class="f-jev" points="1015.6,61.0 1004.6,65.5 1004.6,56.5"/><g class="sq-node"><rect class="sq-box n-jev" x="1018.6" y="2" width="177.7" height="118" rx="3"/><rect class="f-jev" x="1018.6" y="2" width="177.7" height="4"/><text class="sq-tag f-jev" x="1029.6" y="26">5 · PROBABILITIES</text><text class="sq-title" x="1029.6" y="49">Typed</text><text class="sq-title" x="1029.6" y="69">probabilities</text><text class="sq-sub" x="1029.6" y="92">no model-written JSON</text><text class="sq-sub" x="1029.6" y="109">contract to repair</text></g><polyline class="sq-line s-jev" points="1199.3,61.0 1208.3,61.0"/><polygon class="f-jev" points="1219.3,61.0 1208.3,65.5 1208.3,56.5"/><g class="sq-node"><rect class="sq-box n-teal" x="1222.3" y="2" width="177.7" height="118" rx="3"/><rect class="f-teal" x="1222.3" y="2" width="177.7" height="4"/><text class="sq-tag f-teal" x="1233.3" y="26">6 · DECIDE + RECORD</text><text class="sq-title" x="1233.3" y="49">ALLOW | BLOCK |</text><text class="sq-title" x="1233.3" y="69">ESCALATE</text><text class="sq-sub" x="1233.3" y="92">same thresholds +</text><text class="sq-sub" x="1233.3" y="109">action contract</text></g></svg>
         </figure>
         <p class="seq-legend">Dashed border = network boundary &middot; red step = where the 20 measured output-contract failures occurred</p>
-        <aside class="speaker-note" data-time="backup, untimed">Use only for Q&amp;A. Walk the two rows side by side: identical source, GuardrailRequest, and action node. Live A2A traffic builds that request in the input, tool-call, or output hook; the benchmark builds it directly from each case and calls SemanticPathRunner, so no hook runs there. The LLM row adds a serialized judge prompt and a strict parse step, the Jev row adds a typed REST contract. Name the boundaries: Bedrock is forced through the VPC endpoint with an IAM SourceVpce condition; TypeSafe is the only semantic-provider call over public HTTPS. The red step is where the four LlmProtocolException failures happened, before semantic judgment could be scored. Implementation detail kept off slide 04: both Bedrock clients use an explicit interface-endpoint override, and the role requires the matching SourceVpce value, so a public-endpoint fallback is denied rather than merely avoided. The guardrail judge is a stateless LangChain4j AI service with chat memory disabled, so each benchmark case is an independent classification and earlier prompts cannot inflate tokens or contaminate later decisions. The Jev adapter is a declarative Quarkus REST client to /v1/systemone with retries, timeout, and a circuit breaker.</aside>
+        <aside class="speaker-note" data-time="backup, untimed">Use only for Q&amp;A. Walk the two rows side by side: identical source, GuardrailRequest, and action node. Live A2A traffic builds that request in the input, tool-call, or output hook; the benchmark builds it directly from each case and calls SemanticPathRunner, so no hook runs there. The LLM row adds a serialized judge prompt and a strict parse step, the Jev row adds a typed REST contract. Name the boundaries: Bedrock is forced through the VPC endpoint with an IAM SourceVpce condition; TypeSafe is the only semantic-provider call over public HTTPS. The red step is where the 20 measured LlmProtocolException failures happened, before semantic judgment could be scored. Implementation detail kept off slide 04: both Bedrock clients use an explicit interface-endpoint override, and the role requires the matching SourceVpce value, so a public-endpoint fallback is denied rather than merely avoided. The guardrail judge is a stateless LangChain4j AI service with chat memory disabled, so each benchmark case is an independent classification and earlier prompts cannot inflate tokens or contaminate later decisions. The Jev adapter is a declarative Quarkus REST client to /v1/systemone with retries, timeout, and a circuit breaker.</aside>
       </div>
     </section>
 
@@ -2431,7 +2462,7 @@
           <p><strong>Provider fallback</strong> selects who supplies an answer.</p>
           <p><strong>Policy ESCALATE</strong> is a later application decision.</p>
         </div>
-        <p class="seq-legend">Measured in this run: 31 Jev calls and 22 generative calls across 31 successful Hybrid decisions &middot; confidence fallback 3.23% &middot; generative-call avoidance 29.03%</p>
+        <p class="seq-legend">Across three repetitions: 93 Jev calls and 66 generative calls in 93 successful Hybrid decisions &middot; confidence fallback 3.23% &middot; generative-call avoidance 29.03%</p>
         <aside class="speaker-note" data-time="backup, untimed">Use only for Q&amp;A. Successful path: Jev evaluates the JEV_FIRST questions with projected state; the confidence policy marks each answer clear or uncertain; LLM_DIRECT questions and uncertain Jev questions form one LLM batch; clear Jev answers and LLM answers merge in original question order; the action policy then maps the final probabilities to ALLOW, BLOCK, or ESCALATE. If nothing needs the LLM, the Jev evaluation is used directly. The red branch leaves the Jev call before the confidence decision. Under FALLBACK_TO_LLM, the current default, all original questions go to one LLM evaluation that is returned directly, with nothing to merge. Under PROPAGATE_FAILURE, the Hybrid evaluation stops with the provider failure. Keep the two ideas apart: provider fallback chooses who answers; ESCALATE is an application decision made afterwards. The 3.23% figure counts confidence fallbacks only, not planned LLM_DIRECT routes.</aside>
       </div>
     </section>
@@ -2571,11 +2602,40 @@
         <aside class="speaker-note" data-time="backup, untimed">Use this as an engineering lesson, not a verdict against Strands. Direct Strands was 100% available in every iteration. Its p50 stayed between 174.7 and 174.9 ms; p95 stayed between 183.9 and 189.3 ms. Exact action agreement stayed at 44.12% because many probabilities landed inside the existing 0.20 to 0.80 uncertainty band. Across three repetitions, 54 expected blocks produced 12 blocks, 42 escalations, and no allows; 48 expected allows produced 33 allows, 15 escalations, and no blocks. The strict scorer counts ESCALATE instead of expected BLOCK as an unsafe miss, but no unsafe case received ALLOW. Strands Hybrid reached 94.68% exact action among 94 successful observations with zero observed false blocks or expected-BLOCK misses. Its savings ranged from 29.81% to 30.03%; LLM-call avoidance ranged from 15.63% to 16.13%. Jev Hybrid saved 44.26% and avoided 29.03%. All 20 measured failures came from the generative judge&rsquo;s strict output contract, not either decision model. Next: calibrate Strands thresholds and test a Strands-specific route table.</aside>
       </div>
     </section>
+    <!-- A7 APPENDIX: BROADER INFERENCE OPTIMIZATION -->
+    <section class="chapter" id="appendix-optimization" data-index="A7" aria-labelledby="appendix-optimization-title">
+      <div class="chapter-inner">
+        <p class="kicker">Appendix A7 &middot; broader context, untimed</p>
+        <h2 id="appendix-optimization-title">Does this request need generative inference?</h2>
+        <p class="lede">Avoid unnecessary model calls, then choose the right model for the work that remains.</p>
+        <div class="optimization-grid">
+          <article class="optimization-item" style="--accent: var(--hybrid)">
+            <h3>Cache and reuse</h3>
+            <p>Reuse a valid result while the relevant input, context, and policy remain unchanged.</p>
+          </article>
+          <article class="optimization-item" style="--accent: var(--llm)">
+            <h3>Batch what can wait</h3>
+            <p>Group non-interactive scoring into batch jobs to use serving capacity efficiently.</p>
+          </article>
+          <article class="optimization-item" style="--accent: var(--jev)">
+            <h3>Keep hard rules in code</h3>
+            <p>Authorization, schema checks, limits, and arithmetic belong in deterministic code.</p>
+          </article>
+          <article class="optimization-item" style="--accent: var(--teal)">
+            <h3>Use decision models for judgment</h3>
+            <p>For bounded yes/no or classification checks, evaluate Jev or Strands Decider before using a generative judge.</p>
+          </article>
+        </div>
+        <p class="optimization-question">Which calls in your agent need generated content, and which only need a decision?</p>
+        <p class="optimization-scope">This study measured decision-model routing for guardrails. Caching and offline batching are additional opportunities to evaluate.</p>
+        <aside class="speaker-note" data-time="backup, untimed">Connect the experiment to the wider inference optimization problem. First ask whether a model call is needed. A valid cached result can avoid repeated inference, but its key and expiry must account for relevant state and policy changes. Exact rules belong in code. Offline batching still performs inference and can improve serving efficiency when the workload permits waiting. When semantic judgment is needed, a decision model can supply a bounded answer, while generative models remain useful for content creation and checks that require deeper reasoning. Decision models still perform inference and can use GPUs, as our Strands A10G deployment does. The measured evidence in this talk covers guardrail routing only. The lab does not implement or benchmark a result cache or offline batch serving. Close with the audience question: which calls in your own agent need generated content, and which only need a decision?</aside>
+      </div>
+    </section>
   </main>
 
   <div class="present-controls" aria-label="Presentation controls">
     <button class="icon-button" id="prevSlide" type="button" aria-label="Previous slide" title="Previous slide"><svg class="icon" aria-hidden="true"><use href="#i-left"></use></svg></button>
-    <span class="slide-count" id="slideCount" aria-live="polite">1 / 16</span>
+    <span class="slide-count" id="slideCount" aria-live="polite">1 / 17</span>
     <button class="icon-button" id="nextSlide" type="button" aria-label="Next slide" title="Next slide"><svg class="icon" aria-hidden="true"><use href="#i-right"></use></svg></button>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>

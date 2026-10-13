@@ -33,8 +33,9 @@ The v1 corpus now contains 34 draft cases:
 
 Source-derived cases carry the `source-derived` risk tag and at least one
 `sourceRefs` entry. The benchmark schema rejects a source-derived case without
-provenance. Observations intentionally omit source references along with all
-request and response content.
+provenance. The corpus retains source references. Current evidence reports
+include controlled request state, typed questions, projected provider inputs,
+and model outputs alongside metrics so readers can inspect each decision.
 
 The imported cases cover:
 
