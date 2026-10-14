@@ -1,5 +1,7 @@
 # Decision Model Inference Lab
 
+**[View the 15-minute presentation](https://murubhas.github.io/decision-model-inference-lab/decision-model-inference-lab-15min.html#overview)**
+
 An inference optimization experiment for a Quarkus A2A agent.
 
 This project measures when a decision model can make semantic guardrails for a
@@ -692,23 +694,20 @@ connects decision-model routing to caching, offline batching, and deterministic
 code. Caching and offline batch serving are opportunities to evaluate, not
 implemented features or measured savings in this lab.
 
-## Publish The Presentation
+## Published Presentation
 
-The self-contained HTML5 deck can be hosted with GitHub Pages. The repository
+The self-contained HTML5 deck is published on GitHub Pages. The repository
 includes `docs/index.html`, which opens the deck and preserves chapter links,
 and `docs/.nojekyll`, which disables Jekyll processing.
 
-In the repository's
-[Pages settings](https://github.com/murubhas/decision-model-inference-lab/settings/pages):
+The publishing source in the repository's
+[Pages settings](https://github.com/murubhas/decision-model-inference-lab/settings/pages)
+is **Deploy from a branch**, using branch **main** and folder **/docs**.
 
-1. Set **Source** to **Deploy from a branch**.
-2. Select branch **main** and folder **/docs**.
-3. Click **Save** and wait for the Pages deployment to finish.
-
-After deployment, the presentation is available at
+The presentation is available at
 [the site root](https://murubhas.github.io/decision-model-inference-lab/)
 or [the direct deck URL](https://murubhas.github.io/decision-model-inference-lab/decision-model-inference-lab-15min.html#overview).
-To share the new appendix directly, use
+To share the inference optimization appendix directly, use
 [Inference Choices](https://murubhas.github.io/decision-model-inference-lab/decision-model-inference-lab-15min.html#appendix-optimization).
 
 Subsequent pushes to `main` publish changes in `docs/` automatically. The

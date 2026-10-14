@@ -29,7 +29,7 @@ Public release still requires a license and a review of author identity and
 history. The README now uses the chosen GitHub clone URL. Credential rotation
 remains deferred at the project owner's request. Re-run the scans after any
 release changes. Pages setup is documented in the README's
-`Publish The Presentation` section.
+`Published Presentation` section.
 
 ## Before Public Publication
 
