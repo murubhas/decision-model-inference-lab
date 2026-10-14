@@ -692,6 +692,29 @@ connects decision-model routing to caching, offline batching, and deterministic
 code. Caching and offline batch serving are opportunities to evaluate, not
 implemented features or measured savings in this lab.
 
+## Publish The Presentation
+
+The self-contained HTML5 deck can be hosted with GitHub Pages. The repository
+includes `docs/index.html`, which opens the deck and preserves chapter links,
+and `docs/.nojekyll`, which disables Jekyll processing.
+
+In the repository's
+[Pages settings](https://github.com/murubhas/decision-model-inference-lab/settings/pages):
+
+1. Set **Source** to **Deploy from a branch**.
+2. Select branch **main** and folder **/docs**.
+3. Click **Save** and wait for the Pages deployment to finish.
+
+After deployment, the presentation is available at
+[the site root](https://murubhas.github.io/decision-model-inference-lab/)
+or [the direct deck URL](https://murubhas.github.io/decision-model-inference-lab/decision-model-inference-lab-15min.html#overview).
+To share the new appendix directly, use
+[Inference Choices](https://murubhas.github.io/decision-model-inference-lab/decision-model-inference-lab-15min.html#appendix-optimization).
+
+Subsequent pushes to `main` publish changes in `docs/` automatically. The
+presentation needs no Quarkus service or provider credentials. See
+[GitHub's publishing-source guide](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
+
 ## Detailed Architecture
 
 The experiment stays inside the existing Quarkus ecosystem. Jev is a CDI-backed

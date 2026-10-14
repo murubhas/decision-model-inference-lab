@@ -43,22 +43,29 @@ check "private-key material" '-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----'
 check "employee-hosted domain" '[A-Za-z0-9.-]+[.]people[.]aws[.]dev'
 
 public_repository_url=""
+public_pages_url=""
 repository_remote="$(git remote get-url github 2>/dev/null || git remote get-url origin 2>/dev/null || true)"
 if [[ "$repository_remote" =~ ^git@github\.com(-[[:alnum:]_-]+)?:([[:alnum:]_.-]+/[[:alnum:]_.-]+)$ ]]; then
   repository_path="${BASH_REMATCH[2]}"
-  public_repository_url="https://github.com/${repository_path%.git}"
+  repository_path="${repository_path%.git}"
+  public_repository_url="https://github.com/$repository_path"
 elif [[ "$repository_remote" =~ ^https://github\.com/[[:alnum:]_.-]+/[[:alnum:]_.-]+$ ]]; then
   public_repository_url="${repository_remote%.git}"
+  repository_path="${public_repository_url#https://github.com/}"
+fi
+if [[ -n "$public_repository_url" ]]; then
+  public_pages_url="https://${repository_path%%/*}.github.io/${repository_path#*/}"
 fi
 
 if [[ -f .publication-denylist ]]; then
   while IFS= read -r denied; do
     [[ -z "$denied" || "$denied" == \#* ]] && continue
     while IFS= read -r matched_line; do
-      # The chosen repository URL is public project identity, not a personal-data leak.
+      # Only the chosen repository and its Pages URL are approved public project identity.
       filtered_line="$matched_line"
       if [[ -n "$public_repository_url" ]]; then
         filtered_line="${matched_line//"$public_repository_url"/<public-repository>}"
+        filtered_line="${filtered_line//"$public_pages_url"/<public-pages>}"
       fi
       if [[ "$filtered_line" == *"$denied"* ]]; then
         printf '%s\n' "$matched_line"

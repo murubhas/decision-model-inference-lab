@@ -1,16 +1,16 @@
 # Public Release Checklist
 
 This directory is a standalone repository with an internal GitLab remote
-(`origin`) and a private GitHub mirror (`github`). The private mirror preserves
-the existing history for synchronization. Its source and checked-in evidence
-are prepared for public review, but public publication requires the checks below.
+(`origin`) and a public GitHub mirror (`github`). The repository owner made
+GitHub public on 2026-10-13. The mirror preserves the existing history for
+synchronization. The checklist below records the release-review guidance.
 
 The mirrored Git history contains an employee email in commit metadata.
 The source-file audit does not inspect author or committer metadata. To preserve
 the requested privacy boundary, create the public repository from a reviewed
 snapshot with a public or GitHub noreply identity. Keep the internal repository
-and its history intact. Review the history before making the GitHub mirror
-public. The private push does not rewrite existing commits or change visibility.
+and its history intact. The GitHub mirror currently retains that metadata.
+Changing repository visibility and enabling Pages do not rewrite existing commits.
 
 ## Latest Local Review
 
@@ -26,8 +26,10 @@ passed mobile reading checks. The deck made no external requests and reported
 no browser errors.
 
 Public release still requires a license and a review of author identity and
-history. The README now uses the chosen GitHub clone URL. Credential rotation remains deferred
-at the project owner's request. Re-run the scans after any release changes.
+history. The README now uses the chosen GitHub clone URL. Credential rotation
+remains deferred at the project owner's request. Re-run the scans after any
+release changes. Pages setup is documented in the README's
+`Publish The Presentation` section.
 
 ## Before Public Publication
 
